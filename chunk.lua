@@ -27,7 +27,7 @@ function Chunk:init(w, x, y)
 	end
 	self.level = 1
 	self.maxlevel = 3
-	self.waterbatch = love.graphics.newSpriteBatch(self.world.textures.water.tiles, self.size^2)
+	self.batch = love.graphics.newSpriteBatch(self.world.textures.tiles, self.size^2)
 end
 
 function Chunk:draw()
@@ -42,8 +42,8 @@ function Chunk:draw()
 		end
 	elseif self.level == 2 then
 		-- ?? lol
-	elseif self.level == 3 then
-		love.graphics.draw(self.waterbatch)
+	elseif self.level == self.maxlevel then
+		love.graphics.draw(self.batch)
 	end
 	love.graphics.pop()
 end
@@ -96,7 +96,9 @@ function Chunk:detail()
 		for x = 1, self.size do
 			for y = 1, self.size do
 				if self.depth[x][y] == -1 then
-					self.waterbatch:add(self.world.textures.water.quads[self:getTileBitmask(x, y)], 16*(x-1), 16*(y-1))
+					self.batch:add(self.world.textures.waterquads[self:getTileBitmask(x, y)], 16*(x-1), 16*(y-1))
+				elseif self.depth[x][y] == 1 then
+					self.batch:add(self.world.textures.rockquads[self:getTileBitmask(x, y)], 16*(x-1), 16*(y-1))
 				end
 			end
 		end
@@ -104,19 +106,55 @@ function Chunk:detail()
 	self.level = self.level + 1
 end
 
-function Chunk:getTileBitmask(x, y)
-	local up, down, left, right, center
-	center = self.depth[x][y]
-	-- If overflows, next chunk's edge, else just the offset in our own
-	if (x + 1) > 16 then right = self.world:get(self.x+1, self.y).depth[1 ][y ] else right = self.depth[x+1][y  ] end
-	if (x - 1) <  1 then left  = self.world:get(self.x-1, self.y).depth[16][y ] else left  = self.depth[x-1][y  ] end
-	if (y + 1) > 16 then down  = self.world:get(self.x, self.y+1).depth[x ][1 ] else down  = self.depth[x  ][y+1] end
-	if (y - 1) <  1 then up    = self.world:get(self.x, self.y-1).depth[x ][16] else up    = self.depth[x  ][y-1] end
+function Chunk:getDepth(x, y)
+	-- I don't want vast compatability. Only get border tiles
+	assert(x >= 0 and x <= 17 and y >= 0 and y <= 17)
 
+	local cx, cy = 0, 0 -- Delta chunk coords
+	local tx, ty = 0, 0 -- Delta tile coords
+
+	-- x value overflow to next chunk
+	if x > 16 then
+		cx = 1
+		tx = -16
+	elseif x < 1 then
+		cx = -1
+		tx = 16
+	end
+	 
+	-- y value overflow to next chunk
+	if y > 16 then
+		cy = 1
+		ty = -16
+	elseif y < 1 then
+		cy = -1
+		ty = 16
+	end
+
+	return self.world:get(self.x+cx, self.y+cy).depth[x+tx][y+ty]
+end
+
+function Chunk:getTileBitmask(x, y)
+	local north, south, west, east, northwest, northeast, southwest, southeast, center
+	center = self.depth[x][y]
+	
+	east = self:getDepth(x+1, y) == center
+	west = self:getDepth(x-1, y) == center
+	south = self:getDepth(x, y+1) == center
+	southwest = self:getDepth(x-1, y+1) == center
+	southeast = self:getDepth(x+1, y+1) == center
+	north = self:getDepth(x, y-1) == center
+	northwest = self:getDepth(x-1, y-1) == center
+	northeast = self:getDepth(x+1, y-1) == center
+	
 	local bitmask = 0
-	if up == center then bitmask = bitmask + 1 end
-	if left == center then bitmask = bitmask + 2 end
-	if right == center then bitmask = bitmask + 4 end
-	if down == center then bitmask = bitmask + 8 end
-	return bitmask + 1 -- Arrays in lua start at 1. whoop
+	if north and west and northwest then bitmask = bitmask + 1 end
+	if north then bitmask = bitmask + 2 end
+	if north and east and northeast then bitmask = bitmask + 4 end
+	if west then bitmask = bitmask + 8 end
+	if east then bitmask = bitmask + 16 end
+	if south and west and southwest then bitmask = bitmask + 32 end
+	if south then bitmask = bitmask + 64 end
+	if south and east and southeast then bitmask = bitmask + 128 end
+	return bitmask
 end

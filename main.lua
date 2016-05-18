@@ -14,8 +14,9 @@ function love.load()
 end
 
 function love.draw()
-	love.graphics.setColor(255, 255, 255)
+	love.graphics.setColor(0xff, 0, 0)
 	love.graphics.print(love.timer.getFPS())
+	love.graphics.setColor(0xff, 0xff, 0xff)
 end
 
 function love.update()

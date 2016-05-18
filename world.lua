@@ -9,19 +9,22 @@ require "hashers"
 
 World = Class{}
 
+local bitmasks = { 0, 2, 8, 10, 11, 16, 18, 22, 24, 26, 27, 30, 31, 64, 66, 72, 74, 75, 80, 82, 86, 88, 90, 91, 94, 95, 104, 106, 107, 120, 122, 123, 126, 127, 208, 210, 214, 216, 218, 219, 222, 223, 248, 250, 251, 254, 255, 0 }
+
 function World:init(seed)
 	self.seed = seed
 	self.chunks = {}
 	self.waterheight = 0.1
 	self.landheight = 0.35
 	self.textures = {}
-	self.textures.water = {}
-	self.textures.water.tiles = love.graphics.newImage("assets/water.png")
-	self.textures.water.tiles:setFilter("nearest", "nearest")
-	self.textures.water.size = 16
-	self.textures.water.quads = {}
-	for i = 1, 16 do
-		self.textures.water.quads[i] = love.graphics.newQuad((i-1)*self.textures.water.size, 0, self.textures.water.size, self.textures.water.size, 16*self.textures.water.size, self.textures.water.size)
+	self.textures.tiles = love.graphics.newImage("assets/tiles.png")
+	self.textures.tiles:setFilter("nearest", "nearest")
+	self.textures.waterquads = {}
+	self.textures.rockquads = {}
+
+	for i, n in ipairs(bitmasks) do
+		self.textures.waterquads[n] = love.graphics.newQuad(((i-1)%8)*16, math.floor((i-1)/8)*16, 16, 16, 16*32, 16*32)
+		self.textures.rockquads[n] = love.graphics.newQuad(((i-1)%8)*16, math.floor((i-1)/8)*16+16*6, 16, 16, 16*32, 16*32)
 	end
 end
 

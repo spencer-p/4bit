@@ -1,5 +1,5 @@
 --[[
-	Overworld gamestate
+	This is the *gamestate* for the world
 ]]
 
 Gamestate = require "hump.gamestate"
@@ -8,10 +8,11 @@ require "player"
 overworld = {}
 
 function overworld:init()
-	love.graphics.setBackgroundColor(0x9b, 0xbc, 0x0f)
+	love.graphics.setBackgroundColor(0xe0, 0xf8, 0xd0)
 	love.keyboard.setKeyRepeat(true)
 	self.world = World("seed")
-	self.scale = 5
+	self.height, self.width = 144
+	self.scale = love.graphics.getHeight()/self.height
 	self.player = Player(0, 0)
 	self.camera = Camera()
 	self.camera:lookAt(self.player.x*self.scale, self.player.y*self.scale)
