@@ -20,7 +20,7 @@ function love.draw()
 end
 
 function love.update()
-	require("lovebird.lovebird").update()
+--	require("lovebird.lovebird").update()
 end
 
 function love.keypressed(key)

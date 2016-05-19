@@ -24,11 +24,11 @@ end
 
 function Player:draw()
 	love.graphics.setColor(0xff, 0, 0)
-	love.graphics.rectangle("fill", self.x*16, self.y*16, 1, 1)
+	love.graphics.rectangle("fill", self.x, self.y, 1, 1)
 end
 
 function Player:chunk()
-	local cx = math.floor(self.x/16)
-	local cy = math.floor(self.y/16)
+	local cx = math.floor(self.x/16^2)
+	local cy = math.floor(self.y/16^2)
 	return cx, cy
 end

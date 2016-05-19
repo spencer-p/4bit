@@ -27,7 +27,7 @@ function overworld:draw()
 end
 
 function overworld:update()
-	self.camera:lookAt(self.player.x*self.scale*16, self.player.y*self.scale*16)
+	self.camera:lookAt(self.player.x*self.scale, self.player.y*self.scale)
 	self.world:update(self.player:chunk())
 end
 
