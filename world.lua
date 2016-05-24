@@ -61,7 +61,7 @@ function World:draw(centerx, centery)
 	end
 end
 
-function World:update(centerx, centery)
+function World:update(dt, centerx, centery)
 	-- First update detail
 	for i = centerx-3, centerx+3 do
 		for j = centery-3, centery+3 do
