@@ -5,12 +5,14 @@
 
 require "world"
 require "overworld"
+require "titlescreen"
 Camera = require "hump.camera"
 Gamestate = require "hump.gamestate"
 
 function love.load()
+	colors = { { 0xe0, 0xf8, 0xd0 }, { 0x88, 0xc0, 0x70 }, { 0x30, 0x68, 0x50 }, { 0x08, 0x18, 0x20 } }
 	Gamestate.registerEvents()
-	Gamestate.switch(overworld)
+	Gamestate.switch(titlescreen)
 end
 
 function love.draw()
